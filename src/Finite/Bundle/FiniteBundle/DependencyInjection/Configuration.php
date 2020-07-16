@@ -2,6 +2,7 @@
 
 namespace Finite\Bundle\FiniteBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -18,8 +19,18 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('finite_finite');
+        if (method_exists(TreeBuilder::class, 'getRootNode')) {
+            $treeBuilder = new TreeBuilder('finite_finite');
+
+            /** @var ArrayNodeDefinition $rootNode */
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            $treeBuilder = new TreeBuilder();
+
+            /** @var ArrayNodeDefinition $rootNode */
+            $rootNode = $treeBuilder->root('finite_finite');
+        }
+
         $rootProto = $rootNode->useAttributeAsKey('name')->prototype('array')->children();
 
         $rootProto
